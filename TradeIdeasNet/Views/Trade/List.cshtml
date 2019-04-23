@@ -1,0 +1,126 @@
+﻿@model IEnumerable<TradeIdeasNet.Models.Trade>
+
+@{
+    ViewBag.Title = "Trades";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Trade Ideas</h2>
+<p>
+    @Html.ActionLink("New Trade", "New", "Trade", null, new { @class = "btn btn-primary" })
+</p>
+<table id="trades" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Ticker</th>
+            <th>Trade Type</th>
+            <th>Comment</th>
+            <th>Date</th>
+            <th>Chart</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog">
+
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container">
+        <div id="tradingview_6ee8f"></div>
+        <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/symbols/NASDAQ-AAPL/" rel="noopener" target="_blank"></a> by TradingView</div>
+
+    </div>
+    <!-- TradingView Widget END -->
+
+</div>
+
+@section scripts
+{
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script>
+
+        var symbol1 = "nflx";
+        $(document).ready(function () {
+            var table = $("#trades").DataTable({
+                ajax: { url: "/api/trade", dataSrc: "" },
+
+                columns: [
+                    {
+                        data: "Ticker",
+                        render: function (data, type, Trade) {
+                            return "<a href='/trade/edit/" + Trade.Id + "'>" + Trade.Ticker + "</a>";
+                        }
+                    },
+                    {
+                        data: "Tradetype"
+                    },
+                    {
+                        data: "Comment"
+                    },
+                    {
+                        data: "DateAdded"
+                    },
+                    {
+                        data: "Ticker",
+                        render: function (data) {
+                            return "<button class='btn-link js-chart' data-trade-ticker=" + data + ">Chart</button>";
+                        }
+                    },
+                    {
+                        data: "Id",
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-trade-id=" + data + ">Delete</button>";
+                        }
+                    },
+                ]
+            });
+
+
+            $("#trades").on("click", ".js-delete", function () {
+                var button = $(this);
+
+                bootbox.confirm("Are you sure you want to delete this trade idea?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/trade/" + button.attr("data-trade-id"),
+                            method: "DELETE",
+                            success: function () {
+                                table.row(button.parents("tr")).remove().draw();
+                            }
+                        });
+                    }
+                });
+            });
+
+            $(document).on('hidden.bs.modal', function () {
+                target.removeData('bs.modal')
+                    .find(".modal-content").html('');
+            });
+
+            $("#trades").on("click", ".js-chart", function () {
+                var button = $(this);
+                console.log(symbol1);
+                symbol1 = button.attr("data-trade-ticker");
+                new TradingView.widget(
+                    {
+                        "autosize": false,
+                        "symbol": symbol1,
+                        "interval": "D",
+                        "timezone": "Etc/UTC",
+                        "theme": "Light",
+                        "style": "1",
+                        "locale": "en",
+                        "toolbar_bg": "#f1f3f6",
+                        "enable_publishing": false,
+                        "allow_symbol_change": true,
+                        "container_id": "tradingview_6ee8f"
+                    }
+                );
+                $('#exampleModal').modal();
+            });
+
+        });
+    </script>
+
+}

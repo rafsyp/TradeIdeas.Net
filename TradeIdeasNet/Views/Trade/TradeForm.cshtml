@@ -1,0 +1,38 @@
+﻿@model TradeIdeasNet.Models.TradeFormViewModel
+@{
+     ViewBag.Title = Model.Title;
+}
+<h2>@Model.Title</h2>
+@using (Html.BeginForm("Save", "Trade"))
+{
+    @Html.ValidationSummary(true, "Please fix the following errors.")
+    <div class="form-group">
+        @Html.LabelFor(m => m.Ticker)
+        @Html.TextBoxFor(m => m.Ticker, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Ticker)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Tradetype)
+        @Html.TextBoxFor(m => m.Tradetype, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Tradetype)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Comment)
+        @Html.TextBoxFor(m => m.Comment, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Comment)
+
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.DateAdded)
+        @Html.TextBoxFor(m => m.DateAdded, "{0:d/M/yyyy HH:mm:ss}", new { @Value = @DateTime.Now.ToString(), @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.DateAdded)
+    </div>
+    @Html.HiddenFor(m => m.Id)
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Save</button>
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}
+

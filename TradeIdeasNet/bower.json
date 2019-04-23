@@ -1,0 +1,6 @@
+{
+  "name": "myproject",
+  "dependencies": {
+    "datatables": "DataTables#^1.10.19"
+  }
+}
