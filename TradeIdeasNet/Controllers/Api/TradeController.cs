@@ -32,7 +32,6 @@ namespace TradeIdeas.Controllers.Api
         {
 
             string userid = User.Identity.GetUserId();
-            Console.Write(userid);
             IEnumerable<Trade> trades = new List<Trade>();
             if (!string.IsNullOrEmpty(userid))
             {
